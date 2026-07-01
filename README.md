@@ -6,32 +6,59 @@ The purpose of this repository is to demonstrate how a development team can coll
 
 ---
 
+## Project Architecture & File Structure
+
+The repository uses a strict **Single Responsibility** file layout. Every file name is explicitly predefined so no two members edit the same file simultaneously:
+
+```text
+student-attendance-system/
+│
+├── config/
+│   └── db.php              <-- Member 1 (Database Configuration Hook)
+│
+├── assets/
+│   └── pixel-logo.png      <-- Member 5 (Visual Asset / Pixel Art)
+│
+├── css/
+│   └── style.css           <-- Member 5 (Global Stylesheet Theme)
+│
+├── database.sql            <-- Member 1 (Schema & Initial Admin Seed)
+├── index.php               <-- Member 1 (Login UI & Security Logic)
+├── logout.php              <-- Member 1 (Session Destroyer)
+├── dashboard.php           <-- Member 3 (Main Data Matrix View / Read Loop)
+├── add_attendance.php      <-- Member 2 (Insert Processing Logic / Create)
+├── edit_attendance.php     <-- Member 4 (Update Processing Logic & Sub-UI)
+└── delete_attendance.php   <-- Member 4 (Delete Processing Logic)
+```
+
+---
+
 ## Team Structure & Role Assignments
 
 To maximize efficiency and maintain clean code isolation, project tasks are distributed across 5 specialized engineering roles, with the **Database Setup & Session Controller** serving as the Project Leader.
 
-### 1. Project Leader: Database Setup & Session Controller (Member 1)
-* **System Boundary:** Infrastructure setup, global configurations, and access security walls.
+### 1. Project Leader: Fullstack Architecture & Authentication (Member 1)
+* **Technical Domain:** Core DevOps, Database Administration (DBA), and Backend Security.
 * **Key Deliverables:** `database.sql` (schema layout), `config/db.php` (global PDO hook), `index.php` (login controller), and `logout.php`.
 * **Responsibilities:** Establish the core database tables and provide the global session authentication check (`$_SESSION['user']`) that locks or unlocks system views based on user authentication status.
 
-### 2. Data Input & Verification (Member 2)
-* **System Boundary:** The "Create" operation of the CRUD core.
+### 2. Backend Engineering - Data Insertion (Member 2)
+* **Technical Domain:** Backend Development / Data Engineering (Create Operation).
 * **Key Deliverables:** `add_attendance.php` (backend processing script).
 * **Responsibilities:** Capture data emitted from the dashboard forms, execute strict validation routines to ensure operational eligibility, and safely append new attendance records into the database.
 
-### 3. Central Dashboard & Visualizer (Member 3)
-* **System Boundary:** The "Read" operation and core frontend UI assembly.
+### 3. Frontend Integration & Data Visualization (Member 3)
+* **Technical Domain:** Frontend Development / UI Engineering (Read Operation).
 * **Key Deliverables:** `dashboard.php` (main application matrix view).
 * **Responsibilities:** Construct the central data grid, query MySQL to loop through and display attendance records, render system notifications, and house the input forms and action triggers.
 
-### 4. Data Modifier & Remover (Member 4)
-* **System Boundary:** The "Update" and "Delete" operations of the CRUD core.
+### 4. Backend Engineering - Data Manipulation (Member 4)
+* **Technical Domain:** Backend Development / Logic Engineering (Update/Delete Operations).
 * **Key Deliverables:** `delete_attendance.php` and `edit_attendance.php`.
 * **Responsibilities:** Read unique record identifiers passed through URL string query parameters to securely delete data matrices, or generate dedicated sub-interfaces to process attendance status modifications.
 
-### 5. Assets, Styling, & Theme Pipeline (Member 5)
-* **System Boundary:** Global layout wrappers, visual themes, and asset injection.
+### 5. UI/UX Design & Asset Pipeline (Member 5)
+* **Technical Domain:** Frontend Styling, Graphic Design, and Theme Systems.
 * **Key Deliverables:** `css/style.css` and custom pixel art assets inside the `/assets/` directory.
 * **Responsibilities:** Design the overarching look and feel of the retro pixel art interface. Provide uniform stylesheet rules that hook directly into classes like `.attendance-table` or contextual indicators (`.status-present`, `.status-absent`).
 
