@@ -2,7 +2,7 @@
 
 This repository serves as a **minimal, fully working prototype** of the Student Attendance System built using basic HTML, CSS, procedural PHP, and MySQL. 
 
-The purpose of this repository is to demonstrate how a 5-member development team can collaborate simultaneously without causing code overwrites or architecture breakdowns. By adhering to a strict layout of **predefined file names, global hooks, and input/output contracts ("ports")**, each member can develop their assigned features on an isolated Git branch and merge them cleanly via Pull Requests.
+The purpose of this repository is to demonstrate how a development team can collaborate simultaneously without causing code overwrites or architecture breakdowns. By adhering to a strict layout of **predefined file names, global hooks, and input/output contracts ("ports")**, each member can develop their assigned features on an isolated Git branch and merge them cleanly via Pull Requests.
 
 ---
 
