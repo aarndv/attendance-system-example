@@ -2,98 +2,134 @@
 require_once 'auth_check.php';
 require_once 'config/db.php';
 
-// Analytics Counters
-$presentCount = $conn->query("SELECT COUNT(*) FROM attendance WHERE status = 'Present'")->fetchColumn();
-$absentCount = $conn->query("SELECT COUNT(*) FROM attendance WHERE status = 'Absent'")->fetchColumn();
+// Global Analytics Counters (ignoring filters)
+$res_present = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Present'", $conn);
+$row_present = mysql_fetch_assoc($res_present);
+$present_count = $row_present ? $row_present['total'] : 0;
 
-// Search/Filter Logic
+$res_absent = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Absent'", $conn);
+$row_absent = mysql_fetch_assoc($res_absent);
+$absent_count = $row_absent ? $row_absent['total'] : 0;
+
+$res_tardy = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Tardy'", $conn);
+$row_tardy = mysql_fetch_assoc($res_tardy);
+$tardy_count = $row_tardy ? $row_tardy['total'] : 0;
+
+// Search/Filter logic using 1=1 trick
 $query = "SELECT * FROM attendance WHERE 1=1";
-$params = [];
 
-if (!empty($_GET['search_name'])) {
-    $query .= " AND student_name LIKE :name";
-    $params['name'] = '%' . $_GET['search_name'] . '%';
+if (isset($_GET['search_name']) && strlen($_GET['search_name']) > 0) {
+    $search_name = $_GET['search_name'];
+    $query .= " AND student_name LIKE '%$search_name%'";
 }
-if (!empty($_GET['filter_status'])) {
-    $query .= " AND status = :status";
-    $params['status'] = $_GET['filter_status'];
+
+if (isset($_GET['filter_status']) && strlen($_GET['filter_status']) > 0) {
+    $filter_status = $_GET['filter_status'];
+    $query .= " AND status = '$filter_status'";
 }
 
 $query .= " ORDER BY log_date DESC";
-$stmt = $conn->prepare($query);
-$stmt->execute($params);
-$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$result = mysql_query($query, $conn);
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <span>User: <?php echo $_SESSION['user']; ?></span>
-        <a href="logout.php">Logout</a>
-    </header>
+    <div class="container">
+        <div class="header-bar">
+            <span>Welcome, <strong><?php echo $_SESSION['user']; ?></strong></span>
+            <a href="logout.php" class="btn btn-cancel">Logout</a>
+        </div>
 
-    <div class="stats">
-        <div>Total Present: <?php echo $presentCount; ?></div>
-        <div>Total Absent: <?php echo $absentCount; ?></div>
-    </div>
+        <div class="stats">
+            <div class="stat-card">Total Present: <strong><?php echo $present_count; ?></strong></div>
+            <div class="stat-card">Total Absent: <strong><?php echo $absent_count; ?></strong></div>
+            <div class="stat-card">Total Tardy: <strong><?php echo $tardy_count; ?></strong></div>
+        </div>
 
-    <?php 
-    if (isset($_SESSION['error'])) {
-        echo "<p class='error'>" . $_SESSION['error'] . "</p>";
-        unset($_SESSION['error']);
-    }
-    ?>
+        <?php 
+        if (isset($_SESSION['error'])) {
+            echo "<div class='error-banner'>" . $_SESSION['error'] . "</div>";
+            unset($_SESSION['error']);
+        }
+        ?>
 
-    <div class="layout-grid">
-        <form action="add_attendance.php" method="POST" class="add-form">
-            <h3>Log Attendance</h3>
-            <input type="text" name="student_id" placeholder="Student ID" required>
-            <input type="text" name="student_name" placeholder="Student Name" required>
-            <select name="status">
-                <option value="Present">Present</option>
-                <option value="Absent">Absent</option>
-                <option value="Tardy">Tardy</option>
-            </select>
-            <input type="date" name="log_date" required>
-            <button type="submit">Save</button>
-        </form>
+        <div class="layout-grid">
+            <div class="form-box">
+                <h3>Log Attendance</h3>
+                <form action="add_attendance.php" method="POST">
+                    <div>
+                        <label for="student_id">Student ID:</label>
+                        <input type="text" id="student_id" name="student_id" required>
+                    </div>
+                    <div>
+                        <label for="student_name">Student Name:</label>
+                        <input type="text" id="student_name" name="student_name" required>
+                    </div>
+                    <div>
+                        <label for="status">Status:</label>
+                        <select id="status" name="status">
+                            <option value="Present">Present</option>
+                            <option value="Absent">Absent</option>
+                            <option value="Tardy">Tardy</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="log_date">Date:</label>
+                        <input type="date" id="log_date" name="log_date" required>
+                    </div>
+                    <div>
+                        <button type="submit" class="btn btn-primary">Save Record</button>
+                    </div>
+                </form>
+            </div>
 
-        <div>
-            <form method="GET" action="dashboard.php" class="filter-form">
-                <input type="text" name="search_name" placeholder="Search Name">
-                <select name="filter_status">
-                    <option value="">All Statuses</option>
-                    <option value="Present">Present</option>
-                    <option value="Absent">Absent</option>
-                </select>
-                <button type="submit">Filter</button>
-            </form>
+            <div>
+                <h3>Search and Filters</h3>
+                <form method="GET" action="dashboard.php" class="filter-form">
+                    <input type="text" name="search_name" placeholder="Search Name" value="<?php echo isset($_GET['search_name']) ? $_GET['search_name'] : ''; ?>">
+                    <select name="filter_status">
+                        <option value="">All Statuses</option>
+                        <option value="Present" <?php if(isset($_GET['filter_status']) && $_GET['filter_status'] === 'Present') echo 'selected'; ?>>Present</option>
+                        <option value="Absent" <?php if(isset($_GET['filter_status']) && $_GET['filter_status'] === 'Absent') echo 'selected'; ?>>Absent</option>
+                        <option value="Tardy" <?php if(isset($_GET['filter_status']) && $_GET['filter_status'] === 'Tardy') echo 'selected'; ?>>Tardy</option>
+                    </select>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </form>
 
-            <table class="attendance-table">
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Name</th><th>Status</th><th>Date</th><th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($records as $row): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($row['student_id']); ?></td>
-                        <td><?php echo htmlspecialchars($row['student_name']); ?></td>
-                        <td class="status-<?php echo strtolower($row['status']); ?>"><?php echo $row['status']; ?></td>
-                        <td><?php echo $row['log_date']; ?></td>
-                        <td>
-                            <a href="edit_attendance.php?id=<?php echo $row['id']; ?>" class="btn-edit">Edit</a>
-                            <a href="delete_attendance.php?id=<?php echo $row['id']; ?>" class="btn-delete">Delete</a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>Student ID</th>
+                            <th>Student Name</th>
+                            <th>Status</th>
+                            <th>Log Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($result): ?>
+                            <?php while ($row = mysql_fetch_assoc($result)): ?>
+                            <tr>
+                                <td><?php echo $row['student_id']; ?></td>
+                                <td><?php echo $row['student_name']; ?></td>
+                                <td class="status-<?php echo strtolower($row['status']); ?>"><?php echo $row['status']; ?></td>
+                                <td><?php echo $row['log_date']; ?></td>
+                                <td>
+                                    <a href="edit_attendance.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">Edit</a>
+                                    <a href="delete_attendance.php?id=<?php echo $row['id']; ?>" class="btn btn-danger">Delete</a>
+                                </td>
+                            </tr>
+                            <?php endwhile; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
