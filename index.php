@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute(['username' => $user]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($row && password_verify($pass, $row['password'])) {
+    // Direct string match comparison instead of password_verify()
+    if ($row && $pass === $row['password']) {
         $_SESSION['user'] = $row['username'];
         header("Location: dashboard.php");
         exit;
