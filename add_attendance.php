@@ -1,27 +1,34 @@
 <?php
-session_start();
-if (!isset($_SESSION['user'])) { die("Unauthorized access."); }
+require_once 'auth_check.php';
 require_once 'config/db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $student_id = trim($_POST['student_id'] ?? '');
-    $student_name = trim($_POST['student_name'] ?? '');
-    $status = $_POST['status'] ?? '';
-    $log_date = $_POST['log_date'] ?? '';
+    $id = trim($_POST['student_id']);
+    $name = trim($_POST['student_name']);
+    $status = $_POST['status'];
+    $date = $_POST['log_date'];
 
-    // Data eligibility validation (walang kalokohan)
-    if (empty($student_id) || empty($student_name) || empty($status) || empty($log_date)) {
-        die("Error: Invalid form entry. All fields are mandatory.");
+    // Validation Check
+    if (strlen($name) < 2 || empty($id)) {
+        $_SESSION['error'] = "Invalid input data.";
+        header("Location: dashboard.php");
+        exit;
     }
 
-    $stmt = $conn->prepare("INSERT INTO attendance (student_id, student_name, status, log_date) VALUES (:sid, :sname, :status, :ldate)");
-    $stmt->execute([
-        'sid' => $student_id,
-        'sname' => $student_name,
-        'status' => $status,
-        'ldate' => $log_date
-    ]);
+    // Duplication Check
+    $checkStmt = $conn->prepare("SELECT id FROM attendance WHERE student_id = :id AND log_date = :date");
+    $checkStmt->execute(['id' => $id, 'date' => $date]);
+    
+    if ($checkStmt->rowCount() > 0) {
+        $_SESSION['error'] = "Duplicate log: This student is already recorded for this date.";
+        header("Location: dashboard.php");
+        exit;
+    }
 
+    // Insert Data
+    $stmt = $conn->prepare("INSERT INTO attendance (student_id, student_name, status, log_date) VALUES (:id, :name, :status, :date)");
+    $stmt->execute(['id' => $id, 'name' => $name, 'status' => $status, 'date' => $date]);
+    
     header("Location: dashboard.php");
     exit;
 }
