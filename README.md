@@ -1,4 +1,4 @@
-# Student Attendance System (Jump-Start Example Repo)
+# Student Attendance System (Example Repo)
 
 This repository serves as a **minimal, fully working prototype** of the Student Attendance System built using basic HTML, CSS, procedural PHP, and MySQL. 
 
