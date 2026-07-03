@@ -7,7 +7,13 @@ require_once 'auth_check.php';
 require_once 'config/db.php';
 
 // Establish selected date (defaults to today, cannot be in the future)
-$selected_date = isset($_GET['filter_date']) ? $_GET['filter_date'] : date('Y-m-d');
+$selected_date = date('Y-m-d');
+if (isset($_GET['filter_date']) && strlen($_GET['filter_date']) > 0) {
+    $parsed_time = strtotime($_GET['filter_date']);
+    if ($parsed_time !== false) {
+        $selected_date = date('Y-m-d', $parsed_time);
+    }
+}
 if ($selected_date > date('Y-m-d')) {
     $selected_date = date('Y-m-d');
 }
@@ -234,7 +240,6 @@ $result = mysql_query($query, $conn);
                             <th>Student Name</th>
                             <th>Class</th>
                             <th>Status (Click to toggle)</th>
-                            <th>Log Date</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -253,7 +258,6 @@ $result = mysql_query($query, $conn);
                                         if (isset($_GET['filter_status'])) echo '&filter_status=' . urlencode($_GET['filter_status']);
                                     ?>" class="status-link"><?php echo $row['status']; ?></a>
                                 </td>
-                                <td><?php echo $row['log_date']; ?></td>
                                 <td>
                                     <a href="edit_attendance.php?id=<?php echo $row['id']; ?>" class="btn btn-primary">Edit</a>
                                     <a href="delete_attendance.php?id=<?php echo $row['id']; ?>" class="btn btn-danger">Delete</a>
