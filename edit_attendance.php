@@ -12,16 +12,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    // Retrieve the record's date so we can redirect back to it on the dashboard
+    $date_query = "SELECT log_date FROM attendance WHERE id = '$id'";
+    $date_res = mysql_query($date_query, $conn);
+    $redirect_date = date('Y-m-d');
+    if ($date_res && $date_row = mysql_fetch_array($date_res)) {
+        $redirect_date = $date_row['log_date'];
+    }
+
     $update_query = "UPDATE attendance SET status = '$status' WHERE id = '$id'";
     $update_result = mysql_query($update_query, $conn);
 
     if (!$update_result) {
         $_SESSION['error'] = "A database error occurred.";
-        header("Location: dashboard.php");
+        header("Location: dashboard.php?filter_date=" . urlencode($redirect_date));
         exit;
     }
 
-    header("Location: dashboard.php");
+    header("Location: dashboard.php?filter_date=" . urlencode($redirect_date));
     exit;
 }
 

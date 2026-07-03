@@ -9,7 +9,7 @@ if (strlen($target_id) === 0) {
 }
 
 // Boundary Verification
-$check_query = "SELECT id FROM attendance WHERE id = '$target_id'";
+$check_query = "SELECT id, log_date FROM attendance WHERE id = '$target_id'";
 $check_result = mysql_query($check_query, $conn);
 
 if (!$check_result) {
@@ -21,6 +21,8 @@ if (!$row) {
     die("Error: Target record does not exist.");
 }
 
+$redirect_date = $row['log_date'];
+
 // Execute deletion
 $delete_query = "DELETE FROM attendance WHERE id = '$target_id'";
 $delete_query_result = mysql_query($delete_query, $conn);
@@ -29,6 +31,6 @@ if (!$delete_query_result) {
     die("Error: Failed to delete record.");
 }
 
-header("Location: dashboard.php");
+header("Location: dashboard.php?filter_date=" . urlencode($redirect_date));
 exit;
 ?>
