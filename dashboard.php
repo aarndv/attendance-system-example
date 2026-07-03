@@ -15,10 +15,12 @@ if ($selected_date > date('Y-m-d')) {
 // 1. Instant Status Toggle (cycling Present -> Absent -> Tardy -> Present)
 if (isset($_GET['toggle_id'])) {
     $toggle_id = $_GET['toggle_id'];
-    $toggle_query = "SELECT status FROM attendance WHERE id = '$toggle_id'";
+    $toggle_query = "SELECT status, log_date FROM attendance WHERE id = '$toggle_id'";
     $toggle_res = mysql_query($toggle_query, $conn);
+    $redirect_date = date('Y-m-d');
     if ($toggle_res && $toggle_row = mysql_fetch_array($toggle_res)) {
         $current_status = $toggle_row['status'];
+        $redirect_date = $toggle_row['log_date'];
         $next_status = 'Present';
         if ($current_status === 'Present') {
             $next_status = 'Absent';
@@ -33,7 +35,7 @@ if (isset($_GET['toggle_id'])) {
     // Redirect back to preserve search/filter parameters
     $redirect_url = "dashboard.php";
     $params = array();
-    $params[] = "filter_date=" . urlencode($selected_date);
+    $params[] = "filter_date=" . urlencode($redirect_date);
     if (isset($_GET['filter_class'])) $params[] = "filter_class=" . urlencode($_GET['filter_class']);
     if (isset($_GET['search_name'])) $params[] = "search_name=" . urlencode($_GET['search_name']);
     if (isset($_GET['filter_status'])) $params[] = "filter_status=" . urlencode($_GET['filter_status']);
