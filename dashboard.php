@@ -4,15 +4,15 @@ require_once 'config/db.php';
 
 // Global Analytics Counters (ignoring filters)
 $res_present = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Present'", $conn);
-$row_present = mysql_fetch_assoc($res_present);
+$row_present = mysql_fetch_array($res_present);
 $present_count = $row_present ? $row_present['total'] : 0;
 
 $res_absent = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Absent'", $conn);
-$row_absent = mysql_fetch_assoc($res_absent);
+$row_absent = mysql_fetch_array($res_absent);
 $absent_count = $row_absent ? $row_absent['total'] : 0;
 
 $res_tardy = mysql_query("SELECT COUNT(*) as total FROM attendance WHERE status = 'Tardy'", $conn);
-$row_tardy = mysql_fetch_assoc($res_tardy);
+$row_tardy = mysql_fetch_array($res_tardy);
 $tardy_count = $row_tardy ? $row_tardy['total'] : 0;
 
 // Search/Filter logic using 1=1 trick
@@ -114,7 +114,7 @@ $result = mysql_query($query, $conn);
                     </thead>
                     <tbody>
                         <?php if ($result): ?>
-                            <?php while ($row = mysql_fetch_assoc($result)): ?>
+                            <?php while ($row = mysql_fetch_array($result)): ?>
                             <tr>
                                 <td><?php echo $row['student_id']; ?></td>
                                 <td><?php echo $row['student_name']; ?></td>

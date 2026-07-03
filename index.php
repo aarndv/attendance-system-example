@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        $row = mysql_fetch_assoc($result);
+        $row = mysql_fetch_array($result);
 
         if ($row && $pass === $row['password']) {
             $_SESSION['user'] = $row['username'];

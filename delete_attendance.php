@@ -16,7 +16,7 @@ if (!$check_result) {
     die("Error: A database error occurred.");
 }
 
-$row = mysql_fetch_assoc($check_result);
+$row = mysql_fetch_array($check_result);
 if (!$row) {
     die("Error: Target record does not exist.");
 }

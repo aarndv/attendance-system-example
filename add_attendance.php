@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    $existing_row = mysql_fetch_assoc($check_result);
+    $existing_row = mysql_fetch_array($check_result);
     if ($existing_row) {
         $_SESSION['error'] = "Duplicate log: This student is already recorded for this date.";
         header("Location: dashboard.php");

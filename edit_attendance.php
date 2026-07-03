@@ -37,7 +37,7 @@ if (!$result) {
     die("Error: A database error occurred.");
 }
 
-$row = mysql_fetch_assoc($result);
+$row = mysql_fetch_array($result);
 if (!$row) {
     die("Error: Record not found.");
 }
