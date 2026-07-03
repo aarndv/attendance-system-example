@@ -194,7 +194,7 @@ $result = mysql_query($query, $conn);
                     </div>
                     <div>
                         <label for="log_date">Date:</label>
-                        <input type="date" id="log_date" name="log_date" value="<?php echo date('Y-m-d'); ?>" required>
+                        <input type="date" id="log_date" name="log_date" value="<?php echo $selected_date; ?>" required>
                     </div>
                     <div>
                         <button type="submit" class="btn btn-primary">Save Record</button>
@@ -207,11 +207,11 @@ $result = mysql_query($query, $conn);
                 <form method="GET" action="dashboard.php" class="filter-form">
                     <div>
                         <label>Date Scope:</label>
-                        <input type="date" name="filter_date" value="<?php echo $selected_date; ?>" max="<?php echo date('Y-m-d'); ?>">
+                        <input type="date" name="filter_date" value="<?php echo $selected_date; ?>" max="<?php echo date('Y-m-d'); ?>" onchange="this.form.submit()">
                     </div>
                     <div>
                         <label>Class Section:</label>
-                        <select name="filter_class">
+                        <select name="filter_class" onchange="this.form.submit()">
                             <option value="">All Classes</option>
                             <option value="Class A" <?php if(isset($_GET['filter_class']) && $_GET['filter_class'] === 'Class A') echo 'selected'; ?>>Class A</option>
                             <option value="Class B" <?php if(isset($_GET['filter_class']) && $_GET['filter_class'] === 'Class B') echo 'selected'; ?>>Class B</option>
@@ -223,7 +223,7 @@ $result = mysql_query($query, $conn);
                     </div>
                     <div>
                         <label>Status:</label>
-                        <select name="filter_status">
+                        <select name="filter_status" onchange="this.form.submit()">
                             <option value="">All Statuses</option>
                             <option value="Present" <?php if(isset($_GET['filter_status']) && $_GET['filter_status'] === 'Present') echo 'selected'; ?>>Present</option>
                             <option value="Absent" <?php if(isset($_GET['filter_status']) && $_GET['filter_status'] === 'Absent') echo 'selected'; ?>>Absent</option>
