@@ -71,7 +71,7 @@ if ($date_count == 0) {
         $student_id = "A-" . sprintf("%02d", $i + 1);
         $student_name = $class_a_names[$i];
         $class_section = "Class A";
-        $status = $statuses[($i + strlen($student_name)) % count($statuses)];
+        $status = $statuses[($i + strlen($student_name) + strtotime($selected_date)) % count($statuses)];
         
         $insert_sql = "INSERT INTO attendance (student_id, student_name, class_section, status, log_date) 
                        VALUES ('$student_id', '$student_name', '$class_section', '$status', '$selected_date')";
@@ -83,7 +83,7 @@ if ($date_count == 0) {
         $student_id = "B-" . sprintf("%02d", $i + 1);
         $student_name = $class_b_names[$i];
         $class_section = "Class B";
-        $status = $statuses[($i + strlen($student_name) + 3) % count($statuses)];
+        $status = $statuses[($i + strlen($student_name) + 3 + strtotime($selected_date)) % count($statuses)];
         
         $insert_sql = "INSERT INTO attendance (student_id, student_name, class_section, status, log_date) 
                        VALUES ('$student_id', '$student_name', '$class_section', '$status', '$selected_date')";
