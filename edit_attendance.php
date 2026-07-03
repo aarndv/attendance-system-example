@@ -91,7 +91,7 @@ if (!$row) {
                 
                 <div>
                     <button type="submit" class="btn btn-primary">Update Status</button>
-                    <a href="dashboard.php" class="btn btn-cancel">Cancel and Return</a>
+                    <a href="dashboard.php?filter_date=<?php echo urlencode($row['log_date']); ?>" class="btn btn-cancel">Cancel and Return</a>
                 </div>
             </form>
         </div>
