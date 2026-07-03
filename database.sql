@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS attendance (
     id INT AUTO_INCREMENT PRIMARY KEY,
     student_id VARCHAR(50) NOT NULL,
     student_name VARCHAR(100) NOT NULL,
+    class_section VARCHAR(50) NOT NULL,
     status VARCHAR(15) NOT NULL,
     log_date DATE NOT NULL
 );

@@ -68,6 +68,11 @@ if (!$row) {
                 </div>
                 
                 <div>
+                    <label>Class Section</label>
+                    <input type="text" value="<?php echo $row['class_section']; ?>" readonly>
+                </div>
+                
+                <div>
                     <label>Update Status</label>
                     <select name="status">
                         <option value="Present" <?php if($row['status'] === 'Present') echo 'selected'; ?>>Present</option>
