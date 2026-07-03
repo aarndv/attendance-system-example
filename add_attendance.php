@@ -11,7 +11,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (strlen($id) === 0 || strlen($name) === 0 || strlen($class_section) === 0 || strlen($status) === 0 || strlen($date) === 0) {
         $_SESSION['error'] = "All fields are required.";
-        header("Location: dashboard.php");
+        header("Location: dashboard.php?filter_date=" . urlencode($date));
         exit;
     }
 
@@ -21,14 +21,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (!$check_result) {
         $_SESSION['error'] = "A database error occurred.";
-        header("Location: dashboard.php");
+        header("Location: dashboard.php?filter_date=" . urlencode($date));
         exit;
     }
 
     $existing_row = mysql_fetch_array($check_result);
     if ($existing_row) {
         $_SESSION['error'] = "Duplicate log: This student is already recorded for this date.";
-        header("Location: dashboard.php");
+        header("Location: dashboard.php?filter_date=" . urlencode($date));
         exit;
     }
 
@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!$insert_result) {
         $_SESSION['error'] = "A database error occurred.";
-        header("Location: dashboard.php");
+        header("Location: dashboard.php?filter_date=" . urlencode($date));
         exit;
     }
 
-    header("Location: dashboard.php");
+    header("Location: dashboard.php?filter_date=" . urlencode($date));
     exit;
 }
 ?>
